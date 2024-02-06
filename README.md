@@ -71,7 +71,15 @@
   </section>
 # Project Screenshots
 
+
+https://github.com/imadmi/web_project/assets/81130422/c249c4c6-47a8-400d-87eb-6c5c5b6539c1
+
+
+https://github.com/imadmi/web_project/assets/81130422/1a824437-bfcb-432c-9ded-7a390022e297
+
+
 ## Landing Page
+
 ![Landing Page](https://github.com/imadmi/web_project/assets/81130422/38a14040-ecc5-4fa6-b8ee-c7f2db63f69d)
 
 ## Sign Up
