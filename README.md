@@ -69,28 +69,37 @@
       <li>Ensure the game is responsive, considering network issues like disconnection or lag.</li>
     </ul>
   </section>
-  <h2>Pictures :</h2>
-  <div>
-    Landing page
-    <img width="1225" alt="Screen Shot 2024-02-06 at 5 47 07 PM" src="https://github.com/imadmi/web_project/assets/81130422/38a14040-ecc5-4fa6-b8ee-c7f2db63f69d">
-    Sign Up
-<img width="1223" alt="Screen Shot 2024-02-06 at 5 47 47 PM" src="https://github.com/imadmi/web_project/assets/81130422/569fed33-1fa3-44ce-b302-815654cfbdae">
-    Sign In
-<img width="1226" alt="Screen Shot 2024-02-06 at 5 48 31 PM" src="https://github.com/imadmi/web_project/assets/81130422/35ce686b-46e6-4a43-81b9-4545673b9083">
-    Profile
-<img width="1315" alt="Screen Shot 2024-02-06 at 5 51 19 PM" src="https://github.com/imadmi/web_project/assets/81130422/ebd7dc79-111b-45ab-bf88-2ee15b0ca695">
-    Notifications
-<img width="1238" alt="Screen Shot 2024-02-06 at 5 52 56 PM" src="https://github.com/imadmi/web_project/assets/81130422/58241cad-8c3c-4edb-9128-6e600ac724d4">
-    Leaderboard
-<img width="1236" alt="Screen Shot 2024-02-06 at 5 53 27 PM" src="https://github.com/imadmi/web_project/assets/81130422/ab77325f-afac-411b-921c-527a090840ce">
-    Friends
-<img width="1236" alt="Screen Shot 2024-02-06 at 5 53 56 PM" src="https://github.com/imadmi/web_project/assets/81130422/0e85a84a-e0be-48ee-95c7-c0fa043193c8">
-    Chennls
-<img width="1236" alt="Screen Shot 2024-02-06 at 5 54 35 PM" src="https://github.com/imadmi/web_project/assets/81130422/755e82e6-5c58-4dcd-9f7d-4b367bf2396c">
-    Chat
-<img width="1236" alt="Screen Shot 2024-02-06 at 5 54 59 PM" src="https://github.com/imadmi/web_project/assets/81130422/559fd6c1-7961-49b4-ab05-9b2cc6580e33">
-    Game
-<img width="1236" alt="Screen Shot 2024-02-06 at 5 55 21 PM" src="https://github.com/imadmi/web_project/assets/81130422/df754423-7f09-46fb-bdae-47660e64ba4c">
+# Project Screenshots
+
+## Landing Page
+![Landing Page](https://github.com/imadmi/web_project/assets/81130422/38a14040-ecc5-4fa6-b8ee-c7f2db63f69d)
+
+## Sign Up
+![Sign Up](https://github.com/imadmi/web_project/assets/81130422/569fed33-1fa3-44ce-b302-815654cfbdae)
+
+## Sign In
+![Sign In](https://github.com/imadmi/web_project/assets/81130422/35ce686b-46e6-4a43-81b9-4545673b9083)
+
+## Profile
+![Profile](https://github.com/imadmi/web_project/assets/81130422/ebd7dc79-111b-45ab-bf88-2ee15b0ca695)
+
+## Notifications
+![Notifications](https://github.com/imadmi/web_project/assets/81130422/58241cad-8c3c-4edb-9128-6e600ac724d4)
+
+## Leaderboard
+![Leaderboard](https://github.com/imadmi/web_project/assets/81130422/ab77325f-afac-411b-921c-527a090840ce)
+
+## Friends
+![Friends](https://github.com/imadmi/web_project/assets/81130422/0e85a84a-e0be-48ee-95c7-c0fa043193c8)
+
+## Channels
+![Channels](https://github.com/imadmi/web_project/assets/81130422/755e82e6-5c58-4dcd-9f7d-4b367bf2396c)
+
+## Chat
+![Chat](https://github.com/imadmi/web_project/assets/81130422/559fd6c1-7961-49b4-ab05-9b2cc6580e33)
+
+## Game
+![Game](https://github.com/imadmi/web_project/assets/81130422/df754423-7f09-46fb-bdae-47660e64ba4c)
 
 </div>
 
