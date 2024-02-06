@@ -1,0 +1,144 @@
+@tailwind base;
+@tailwind utilities;
+@tailwind components;
+
+/* html,
+body {
+	margin: 0;
+	padding: 0;
+	overflow: hidden @apply h-screen w-screen bg-black;
+	@apply text-white;
+	@apply text-center; */
+
+/* body {
+	background-color: white;
+} */
+
+
+
+
+.step{
+	color:aliceblue;
+}
+.notification-dot {
+	width: 20px;
+	height: 20px;
+	background-color: red;
+	border-radius: 50%;
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: white;
+	font-size: 12px;
+  }
+.mantine-Modal-body {
+	background-color: rgb(75 85 99);
+}
+.m-b5489c3c {
+	background-color: rgb(75 85 99);
+}
+#mantine-styled-comp {
+	background-color: rgb(75 85 99);
+}
+@keyframes moveLeftAndRight {
+	50% {
+		transform: translateX(0);
+	}
+	0%,
+	100% {
+		transform: translateX(3px);
+	}
+}
+
+.animate-moveLeftAndRight {
+	animation: moveLeftAndRight 0.5s infinite;
+}
+
+.custom-height {
+	height: calc(100vh - 64px);
+}
+
+.custom-width {
+	/* width: 100%; */
+	width: calc(100vh - 64px);
+}
+
+.backgroundDiv {
+	background-image: url('../public/one.jpg');
+	background-size: cover;
+	background-position: center;
+	width: 100%;
+	/* width: calc(100vw - 64px); */
+}
+
+.backgroundDivNotVisible {
+	background-image: url('../public/one.jpg');
+	background-size: cover;
+	background-position: center;
+	width: 100%;
+
+	/* width: 100vw; */
+}
+
+.twofabackround {
+	background-image: url('../public/abstract-cubes-dark-shapes.jpeg');
+	background-size: cover;
+	background-position: center;
+	width: calc(100vw);
+}
+
+.homebackround {
+	background-image: url('../public/DALLEpong.png');
+	background-size: cover;
+	background-position: center;
+	width: 100vw;
+}
+
+.tooltip {
+	position: relative;
+	display: inline;
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+	visibility: hidden;
+	position: absolute;
+	z-index: 1;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+	visibility: visible;
+}
+
+.boxTransform {
+	@apply transform hover:scale-105 hover:bg-base-200 transition-all duration-200 ease-in-out;
+}
+
+.m-b5489c3c .m-d0e2b9cd .mantine-Modal-header {
+	background-color: black;
+}
+
+/* 
+@layer {
+	:root {
+		font-size: 1vw;
+	}
+} */
+
+
+
+@layer utilities {
+	/* Hide scrollbar for Chrome, Safari and Opera */
+	.no-scrollbar::-webkit-scrollbar {
+		display: none;
+	}
+   /* Hide scrollbar for IE, Edge and Firefox */
+	.no-scrollbar {
+		-ms-overflow-style: none;  /* IE and Edge */
+		scrollbar-width: none;  /* Firefox */
+  }
+}
