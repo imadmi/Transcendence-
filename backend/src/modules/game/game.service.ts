@@ -12,7 +12,6 @@ import {
 	PlayerMove,
 	Direction,
 	GameConfigState,
-	AiDifficulty,
 	InputType,
 	GameResult,
 	MatchOutcome,
@@ -40,38 +39,21 @@ export class GameService {
 
 	//* Business logic
 
-	/**
-	 * The createGameSession function creates a new game session by joining two players to a room,
-	 * associating the room ID with each player, and storing the game session in a Map.
-	 * @param {string} roomID - The roomID is a string that represents the unique identifier for the game
-	 * session. It is used to associate the players and their game state with a specific room.
-	 * @param {Socket} player1 - The `player1` parameter is a Socket object representing the first player
-	 * in the game session. It is used to join the player to a Socket.io room and associate the room ID
-	 * with the player's data.
-	 * @param {Socket} player2 - The `player2` parameter is a Socket object representing the second player
-	 * in the game session. A Socket object is typically used in Socket.io to represent a client connection
-	 * to the server. In this case, it is used to represent the second player's connection to the game
-	 * server.
-	 */
 	public createGameSession(
 		roomID: string,
 		player1: Socket,
 		player2: Socket,
-		user1: any,
-		user2: any
+		userData: GameSession['userData']
 	) {
 		// Join both Sockets to a Socket.io room
 		player1.join(roomID);
 		player2.join(roomID);
 
 		// Associate the room ID and PlayerID with each Socket
-		player1.data = { roomID, playerID: Player.P1 };
-		player2.data = { roomID, playerID: Player.P2 };
+		player1.data = { ...player1.data, roomID, playerID: Player.P1 };
+		player2.data = { ...player2.data, roomID, playerID: Player.P2 };
 
-		if (user1.login === user2.login) {
-			console.log('AI game detected, user1 needs AI Avatar and username');
-			user1.login = 'Computer';
-		}
+		const aiMatch = userData[0].username === 'Computer' ? true : false;
 
 		// Create a new game session and store it in the Map
 		this.gameSessions.set(roomID, {
@@ -81,8 +63,8 @@ export class GameService {
 			),
 			//! Strings need to be changed to the actual ID's but how do I get them?
 			players: [
-				{ playerIDs: user1.intraId, playerSockets: player1 },
-				{ playerIDs: user2.intraId, playerSockets: player2 },
+				{ playerIDs: player1.data.user.intraId, playerSockets: player1 },
+				{ playerIDs: player2.data.user.intraId, playerSockets: player2 },
 			],
 			gameState: this.initGameState(),
 			intervalID: undefined,
@@ -99,16 +81,8 @@ export class GameService {
 				},
 			],
 			command: [],
-			userData: [
-				{
-					avatar: user1.Avatar,
-					username: user1.login,
-				},
-				{
-					avatar: user2.Avatar,
-					username: user2.login,
-				},
-			],
+			userData,
+			aiMatch: aiMatch,
 		});
 	}
 
@@ -150,16 +124,32 @@ export class GameService {
 	 * @returns There is no return statement in the provided code snippet. Therefore, nothing is being
 	 * returned.
 	 */
-	public updateGameState(gameSession: GameSession, deltaTime: number) {
-		if (this.gameSessions.size == 0) return;
-		this.updateBall(gameSession.gameState, gameSession.ballVelocity, deltaTime);
+	public updateGameState(gameSession: GameSession, deltaTime: number): boolean {
+		// if (this.gameSessions.size == 0) return;
+		// if (
+		// 	gameSession.command[0] === undefined ||
+		// 	gameSession.command[1] === undefined
+		// )
+		// 	return false;
 		this.updatePaddles(gameSession, deltaTime);
+		this.updateBall(gameSession.gameState, gameSession.ballVelocity, deltaTime);
 		if (!this.isBallCloseToPaddle(gameSession.gameState.ball)) return;
 		this.checkPaddleCollision(
 			gameSession,
 			this.choosePaddle(gameSession.gameState.ball)
 		);
 	}
+	//! This is the tested version. I'm tring to see what happens if I do updatePaddles first
+	// public updateGameState(gameSession: GameSession, deltaTime: number) {
+	// 	if (this.gameSessions.size == 0) return;
+	// 	this.updateBall(gameSession.gameState, gameSession.ballVelocity, deltaTime);
+	// 	this.updatePaddles(gameSession, deltaTime);
+	// 	if (!this.isBallCloseToPaddle(gameSession.gameState.ball)) return;
+	// 	this.checkPaddleCollision(
+	// 		gameSession,
+	// 		this.choosePaddle(gameSession.gameState.ball)
+	// 	);
+	// }
 
 	//* Private
 
@@ -168,8 +158,8 @@ export class GameService {
 		ballVelocity: Vector,
 		deltaTime: number
 	): void {
-		// console.log('Ball state before sending', ball);
-		// console.log("Ball's velocity before sending", ballVelocity);
+		// // console.log('Ball state before sending', ball);
+		// // console.log("Ball's velocity before sending", ballVelocity);
 
 		ball.position.x += ballVelocity.x * deltaTime;
 
@@ -346,7 +336,7 @@ export class GameService {
 	public deleteGameSession(clientID: string, roomID: string): void {
 		if (this.gameSessions.size == 0) return;
 		const gameSession = this.gameSessions.get(roomID);
-		console.log('Client was in a room, deleting game session...');
+		// console.log('Client was in a room, deleting game session...');
 
 		if (gameSession) {
 			// Remove the game session
@@ -356,7 +346,7 @@ export class GameService {
 				(player) => player.playerIDs !== clientID
 			);
 			if (otherPlayer) {
-				console.log('Disconnecting other player...');
+				// console.log('Disconnecting other player...');
 				otherPlayer.playerSockets.emit('test');
 				otherPlayer.playerSockets.disconnect();
 			}
@@ -379,29 +369,28 @@ export class GameService {
 		return this.gameSessions.get(roomID);
 	}
 
+	private createGameResult(
+		winnerIndex: number,
+		loserIndex: number,
+		scoreAsString: string,
+		players: Players[]
+	): GameResult {
+		return {
+			winnerId: players[winnerIndex].playerIDs,
+			loserId: players[loserIndex].playerIDs,
+			score: scoreAsString,
+			result: winnerIndex === 0 ? [true, false] : [false, true],
+			outcome: MatchOutcome.FINISHED,
+		};
+	}
+
 	public getWinner(players: Players[], { score }: GameState): GameResult {
-		if (
-			score.player1 < GAME_CONFIG.WinningScore &&
-			score.player2 < GAME_CONFIG.WinningScore
-		)
-			return undefined;
 		const scoreAsString = `${score.player1}${score.player2}`;
+
 		if (score.player1 === GAME_CONFIG.WinningScore) {
-			return {
-				winnerId: players[0].playerIDs,
-				loserId: players[1].playerIDs,
-				score: scoreAsString,
-				result: [true, false],
-				outcome: MatchOutcome.FINISHED,
-			};
+			return this.createGameResult(1, 0, scoreAsString, players);
 		} else {
-			return {
-				winnerId: players[1].playerIDs,
-				loserId: players[0].playerIDs,
-				score: scoreAsString,
-				result: [false, true],
-				outcome: MatchOutcome.FINISHED,
-			};
+			return this.createGameResult(0, 1, scoreAsString, players);
 		}
 	}
 
@@ -418,7 +407,7 @@ export class GameService {
 		const { paddles, ball } = gameState;
 
 		if (inputType === InputType.AI) {
-			console.log('AI Match detected');
+			// console.log('AI Match detected');
 			playerRole = Player.P1;
 		}
 
@@ -468,7 +457,7 @@ export class GameService {
 	 * @returns a boolean value.
 	 */
 	public isInGame(roomID: string): boolean {
-		if (this.gameSessions.size == 0) return true;
+		// if (this.gameSessions.size == 0) return false;
 		return this.gameSessions.get(roomID)?.intervalID !== undefined;
 	}
 
@@ -479,6 +468,15 @@ export class GameService {
 
 	public hasRoom(roomID: string): boolean {
 		return this.gameSessions.has(roomID);
+	}
+
+	public areCommandsSet(roomID: string): boolean {
+		let bool;
+
+		bool = this.gameSessions.get(roomID).command.length === 2;
+		bool = this.gameSessions.get(roomID).command[0] !== undefined;
+		bool = this.gameSessions.get(roomID).command[1] !== undefined;
+		return bool;
 	}
 
 	/**
@@ -549,5 +547,27 @@ export class GameService {
 				user2Avatar: userData[1].avatar,
 			},
 		});
+	}
+
+	public getCommmand(roomID: string): any {
+		if (this.gameSessions.size === 0) return false;
+		return this.gameSessions.get(roomID).command;
+	}
+
+	public checkCommands(roomID: string): boolean {
+		const gameSession = this.gameSessions.get(roomID);
+		if (!gameSession.command)
+			return false;
+
+		if (gameSession.command.length === 2) {
+			return true;
+		}
+		if (
+			gameSession.command[0] !== undefined ||
+			gameSession.command[1] !== undefined
+		) {
+			return true;
+		}
+		return false;
 	}
 }

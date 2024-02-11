@@ -19,7 +19,7 @@ export class UserService {
 
 			return Users;
 		} catch (e) {
-			console.log('Error in getAllUsers: ', e);
+			// console.log('Error in getAllUsers: ', e);
 		}
 	}
 
@@ -65,7 +65,7 @@ export class UserService {
 
 			return User;
 		} catch (error: any) {
-			console.log('Error in getUserbyId: ', error);
+			// console.log('Error in getUserbyId: ', error);
 		}
 	}
 
@@ -78,7 +78,7 @@ export class UserService {
 			});
 			return User;
 		} catch (error: any) {
-			console.log('Error in getUserbyLogin: ', error);
+			// console.log('Error in getUserbyLogin: ', error);
 		}
 	}
 
@@ -86,7 +86,6 @@ export class UserService {
 		const user = await this.getUserbyId(userId);
 
 		if (!user) {
-			console.log(`User with ID ${userId} not found`);
 			return;
 		}
 
@@ -97,13 +96,6 @@ export class UserService {
 				},
 				data: {
 					login: newLogin,
-				},
-			});
-			await prisma.user.update({
-				where: {
-					intraId: userId,
-				},
-				data: {
 					isRegistred: true,
 				},
 			});
@@ -150,10 +142,8 @@ export class UserService {
 				],
 			},
 		});
-		if (friedshipexist)
-		{
-			await prisma.friend.update
-			({
+		if (friedshipexist) {
+			await prisma.friend.update({
 				where: {
 					unique_user_friend: {
 						userId: friedshipexist.userId,
@@ -164,7 +154,7 @@ export class UserService {
 					friendshipStatus: 'ACCEPTED',
 				},
 			});
-			return ;
+			return;
 		}
 		const friend = await prisma.friend.create({
 			data: {
@@ -456,7 +446,7 @@ export class UserService {
 				const winPercentage =
 					totalMatches === 0
 						? 0
-						: (user.lostMatches.length / totalMatches) * 100;
+						: (user.wonMatches.length / totalMatches) * 100;
 
 				await prisma.user.update({
 					where: {

@@ -1,11 +1,7 @@
 node_modules/
 .env
 .DS_Store
-frontend/.env
-frontend/.next/
-frontend/node_modules/
+frontend/build/
 backend/dist/
-backend/.env
-backend/node_modules/
 backend/Avataruploads/*
 backend/database_volume

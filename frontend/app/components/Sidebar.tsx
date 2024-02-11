@@ -3,13 +3,12 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
-import { use, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppContext, AppProvider, User, Message } from '../AppContext';
 import { RiPingPongLine } from 'react-icons/ri';
 import { IoChatbubblesOutline } from 'react-icons/io5';
 import { GrGroup } from 'react-icons/gr';
 import { FaUserFriends } from 'react-icons/fa';
-import { GrAchievement } from 'react-icons/gr';
 import { MdLeaderboard } from 'react-icons/md';
 import { IoMdNotificationsOutline } from 'react-icons/io';
 import { CgProfile } from 'react-icons/cg';
@@ -25,6 +24,7 @@ import {
 	ConnectionStatus,
 	Invite,
 	disconnect,
+	setPrivateMatch,
 } from '../gamelobby/GlobalRedux/features';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../gamelobby/GlobalRedux/store';
@@ -39,8 +39,8 @@ export const Sidebar = () => {
 	);
 	const dispatch = useDispatch();
 	const context = useAppContext();
+	const pattern: RegExp = /^\/chat\/\d+$/;
 
-	const createSocket = () => {};
 	const getFriends = async () => {
 		try {
 			if (context.user?.intraId) {
@@ -86,6 +86,7 @@ export const Sidebar = () => {
 	};
 
 	useEffect(() => {
+		// console.log("Here")
 		if (context.notifSocket) {
 			listenForFriendships();
 		}
@@ -100,31 +101,40 @@ export const Sidebar = () => {
 			});
 			context.setSocket(newSocket);
 		}
+	}, [context.socket]);
+
+	useEffect(() => {
 		if (context.socket && context.user) {
 			context.socket.on('privateMatch', (data: any) => {
 				const msg = data.from.login + ' invite you for a game';
-				toast((t) => (
-					<div className="flex flex-row items-center ">
-						<div className="font-serif text-black font-semibold w-[64%]">{msg}</div>
-						<button
-							className="w-[18%] flex items-center justify-center text-sm font-medium text-indigo-600  hover:text-indigo-500 "
-							onClick={() => {
-								toast.dismiss(t.id);
-								handleInvite(context.user?.intraId, isConnected, Invite.ACCEPTING);
-							}}
-						>
-							<FiCheckCircle size="30" className="text-green-300" />
-						</button>
-						<button
-							className="w-[18%] border border-transparent rounded-none rounded-r-lg flex items-center justify-center text-sm font-medium"
-							onClick={() => {
-								toast.dismiss(t.id);
-							}}
-						>
-							<FiXCircle size="30" className="text-red-300" />
-						</button>
-					</div>
-				));
+				toast(
+					(t) => (
+						<div className="flex flex-row items-center ">
+							<div className="font-serif text-black font-semibold w-[64%]">{msg}</div>
+							<button
+								className="w-[18%] flex items-center justify-center text-sm font-medium text-indigo-600  hover:text-indigo-500 "
+								onClick={() => {
+									toast.dismiss(t.id);
+									handleInvite(context.user?.intraId, isConnected, Invite.ACCEPTING);
+								}}
+							>
+								<FiCheckCircle size="30" className="text-green-300" />
+							</button>
+							<button
+								className="w-[18%] border border-transparent rounded-none rounded-r-lg flex items-center justify-center text-sm font-medium"
+								onClick={() => {
+									toast.dismiss(t.id);
+									handleInvite(context.user?.intraId, isConnected, Invite.REJECTING);
+								}}
+							>
+								<FiXCircle size="30" className="text-red-300" />
+							</button>
+						</div>
+					),
+					{
+						id: data.from.login,
+					},
+				);
 			});
 			return () => {
 				if (context.socket) {
@@ -133,22 +143,25 @@ export const Sidebar = () => {
 			};
 		}
 	}, [context.socket, context.user, isConnected]);
+
 	useEffect(() => {
-		if (context.socket && context.user) {
-			context.socket.on('privateChat', (data: Message) => {
-				if (data) {
-					if (data.sender !== context.user?.intraId) {
-						context.setMessageNum(context.messageNumb + 1);
-					}
+		if (context.socket && !pathname.match(pattern)) {
+			context.socket.on('messageNotification', (data: any) => {
+				if (context?.user) {
+					context.setMessageNum(context.messageNumb + 1);
+					toast.success(`new message`, {
+						id: 'message',
+					});
 				}
 			});
 		}
+
 		return () => {
 			if (context.socket) {
-				context.socket.off('privateChat');
+				context.socket.off('messageNotification');
 			}
 		};
-	}, [context.messageNumb]);
+	}, [context.socket, context.messageNumb, context.user, pathname]);
 
 	useEffect(() => {
 		const segments = pathname.split('/');
@@ -182,6 +195,20 @@ export const Sidebar = () => {
 			}
 		};
 		checkJwtCookie();
+	}, []);
+
+	const handleResize = () => {
+		const shouldHideSidebar = window.innerWidth < 768;
+		context.setisSidebarVisible(!shouldHideSidebar);
+	};
+
+	useEffect(() => {
+		window.addEventListener('resize', handleResize);
+		handleResize();
+
+		return () => {
+			window.removeEventListener('resize', handleResize);
+		};
 	}, []);
 
 	return (

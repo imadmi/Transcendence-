@@ -9,6 +9,7 @@ import {
 	setupInteraction,
 	aiDifficulty,
 	InputType,
+	resetScore,
 } from '@/app/gamelobby/GlobalRedux/features';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRef, useEffect } from 'react';
@@ -62,7 +63,7 @@ export function GameOutcomeModal({ outcome }: any) {
 	return (
 		<>
 			<Modal />
-			<dialog ref={modalRef} className="modal modal-bottom sm:modal-middle">
+			<dialog ref={modalRef} className="modal modal-middle">
 				<div className="modal-box flex flex-col justify-center items-center ">
 					{outcome === GameOutcome.NONE ? (
 						<div className="font-bold text-lg">Something went Wrong!</div>
@@ -103,6 +104,7 @@ export function CountdownModal() {
 	useEffect(() => {
 		if (isGameStarted) {
 			countDown();
+			dispatch(resetScore());
 		}
 		return () => {
 			if (intervalRef.current) clearInterval(intervalRef.current!);
@@ -111,7 +113,6 @@ export function CountdownModal() {
 
 	useEffect(() => {
 		const handleBackButton = () => {
-			console.log('Back button pressed');
 			dispatch(disconnect());
 		};
 		window.addEventListener('popstate', handleBackButton);
@@ -139,13 +140,14 @@ export function CountdownModal() {
 					modal.close();
 					clearInterval(intervalRef.current!);
 					dispatch(setCountDownDone(true));
+					countdown.style.setProperty('--value', '5');
 				}
 			}, 1000);
 		}
 	};
 
 	return (
-		<dialog ref={modalRef} className="modal modal-bottom sm:modal-middle">
+		<dialog ref={modalRef} className="modal modal-middle">
 			<div className="modal-box flex justify-center">
 				<div className="py-4">
 					Game starting in{' '}

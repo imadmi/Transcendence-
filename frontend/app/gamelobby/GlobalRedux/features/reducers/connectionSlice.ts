@@ -1,5 +1,5 @@
-import { MatchType } from '@/interfaces';
 import { createAction, createSlice } from '@reduxjs/toolkit';
+import { aiDifficulty } from '..';
 
 export enum GameOutcome {
 	WON = 'WON',
@@ -11,6 +11,7 @@ export enum GameOutcome {
 export enum Invite {
 	INVITING,
 	ACCEPTING,
+	REJECTING,
 }
 
 export enum ConnectionStatus {
@@ -26,8 +27,7 @@ export enum MatchmakingStatus {
 
 interface PrivateMatch {
 	inviteeID: string | undefined;
-	accepted?: boolean; // True if the friend has accepted the invite
-	socket?: any;
+	accepted?: boolean;
 }
 
 export interface ConnectionState {
@@ -40,6 +40,7 @@ export interface ConnectionState {
 		avatar: string;
 	};
 	countDownDone: boolean;
+	privateMatch: boolean;
 }
 
 const initialState = {
@@ -52,6 +53,7 @@ const initialState = {
 		avatar: '',
 	},
 	countDownDone: false,
+	privateMatch: false,
 } as ConnectionState;
 
 const connectionSlice = createSlice({
@@ -73,6 +75,7 @@ const connectionSlice = createSlice({
 			state.isGameStarted = false;
 			state.countDownDone = false;
 			state.playerOutcome = GameOutcome.NONE;
+			state.privateMatch = false;
 		},
 		setPlayerOutcome: (state, action) => {
 			state.playerOutcome = action.payload;
@@ -83,13 +86,16 @@ const connectionSlice = createSlice({
 		setCountDownDone: (state, action) => {
 			state.countDownDone = action.payload;
 		},
+		setPrivateMatch: (state, action) => {
+			state.privateMatch = action.payload;
+		},
 	},
 });
 
 //* Action creators
 export const startConnection = createAction('connection/startConnection');
 export const disconnect = createAction('connection/disconnect');
-export const addToLobby = createAction('connection/addToLobby');
+export const addToLobby = createAction<aiDifficulty>('connection/addToLobby');
 export const cancelMatchmaking = createAction('connection/cancelMatchmaking');
 export const startLoop = createAction('connection/startLoop');
 export const invitePrivate = createAction<PrivateMatch>(
@@ -108,5 +114,6 @@ export const {
 	setMatchmaking,
 	setGameData,
 	setCountDownDone,
+	setPrivateMatch,
 } = connectionSlice.actions;
 export const connectionReducer = connectionSlice.reducer;

@@ -11,7 +11,7 @@ import {
 	addToLobby,
 	aiDifficulty,
 	invitePrivate,
-	setMatchmaking,
+	setPrivateMatch,
 	startConnection,
 } from '../GlobalRedux/features';
 
@@ -22,45 +22,58 @@ const useStartGame = () => {
 		(state: RootState) => state.connection,
 	);
 	const gameConfig = useSelector((state: RootState) => state.gameConfig);
-	//! Modal shouldn't be fetched by using getElementById
 
 	const pushGame = (isConnected: ConnectionStatus) => {
 		if (isConnected === ConnectionStatus.DISCONNECTED)
 			dispatch(startConnection());
-		if (isInMatchmaking === MatchmakingStatus.DUPLICATE) return;
-		dispatch(addToLobby());
-		gameConfig.aiDifficulty !== aiDifficulty.NONE
-			? dispatch(addToLobby())
-			: dispatch(setMatchmaking(MatchmakingStatus.SEARCHING));
+		if (
+			isInMatchmaking === MatchmakingStatus.DUPLICATE ||
+			isInMatchmaking === MatchmakingStatus.SEARCHING
+		)
+			return;
+		if (isConnected === ConnectionStatus.CONNECTED)
+			dispatch(addToLobby(gameConfig.aiDifficulty));
+		if (gameConfig.aiDifficulty !== aiDifficulty.NONE)
+			dispatch(addToLobby(gameConfig.aiDifficulty));
 	};
 
 	const handleInvite = (
-		inviteeID: string | undefined,
+		inviteeID: string | undefined ,
 		connectionStatus: ConnectionStatus,
 		invite: Invite,
 	) => {
+		if (inviteeID === undefined) return;
+		dispatch(setPrivateMatch(true));
 		if (connectionStatus === ConnectionStatus.DISCONNECTED)
 			dispatch(startConnection());
-		invite === Invite.INVITING
-			? dispatch(invitePrivate({ inviteeID }))
-			: dispatch(acceptPrivate({ inviteeID }));
+		switch (invite) {
+			case Invite.INVITING:
+				dispatch(invitePrivate({ inviteeID }));
+				break;
+			case Invite.ACCEPTING:
+				dispatch(acceptPrivate({ inviteeID }));
+				break;
+			case Invite.REJECTING:
+				dispatch(acceptPrivate({ inviteeID, accepted: false }));
+				break;
+			default:
+				break;
+		}
 	};
 
-	
 	useEffect(() => {
-
 		const showModal = () => {
 			if (typeof document !== 'undefined') {
-					const modal = document.getElementById(
+				const modal = document.getElementById(
 					'startMatchmakingModal',
 				) as HTMLDialogElement;
 				modal?.showModal();
 			}
 		};
-	
+
 		const closeModal = () => {
 			if (typeof document !== 'undefined') {
-					if (isInMatchmaking === MatchmakingStatus.SEARCHING) return null;
+				if (isInMatchmaking === MatchmakingStatus.SEARCHING) return null;
 				const modal = document.getElementById(
 					'startMatchmakingModal',
 				) as HTMLDialogElement;
@@ -69,7 +82,7 @@ const useStartGame = () => {
 		};
 		if (isGameStarted) {
 			closeModal();
-			router.push(`/gamelobby/game`);
+			router.push(`/gamelobby/game`, { scroll: false });
 		} else if (
 			isConnected === ConnectionStatus.CONNECTED &&
 			isInMatchmaking === MatchmakingStatus.SEARCHING

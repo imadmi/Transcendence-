@@ -10,6 +10,8 @@ import { Navbar } from './components/Navbar';
 import { Sidebar } from './components/Sidebar';
 import { Providers } from '@/app/gamelobby/GlobalRedux/provider';
 import { MantineProvider } from '@mantine/core';
+import path from 'path';
+import toast, { Toaster } from 'react-hot-toast';
 
 export default function RootLayout({
 	children,
@@ -20,6 +22,9 @@ export default function RootLayout({
 	const router = useRouter();
 
 	const checkJwtCookie = async () => {
+		if (pathname === '/2FA') {
+			return;
+		}
 		try {
 			const response = await fetch(
 				`${process.env.NEXT_PUBLIC_API_URL}:3001/auth/user`,
@@ -30,7 +35,7 @@ export default function RootLayout({
 			);
 			var data = await response.json();
 
-			if (data.succes === false) {
+			if (data.succes === false && pathname !== '/2FA') {
 				router.push('/');
 			}
 			if (data.data !== null && data.data !== undefined) {
@@ -58,6 +63,7 @@ export default function RootLayout({
 								>
 									<AnimatePresence>{children}</AnimatePresence>
 								</motion.div>
+								<Toaster />
 							</MantineProvider>
 						</AppProvider>
 					</Providers>
@@ -85,6 +91,7 @@ export default function RootLayout({
 										</div>
 									</AnimatePresence>
 								</motion.div>
+								<Toaster />
 							</MantineProvider>
 						</AppProvider>
 					</Providers>
